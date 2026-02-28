@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FamilyTree — Builder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <header class="header">
+    <div class="logo">
+      <div class="logo-mark">🌳</div>
+      <div class="logo-wordmark">
+        <span class="logo-name">FamilyTree</span>
+        <span class="logo-tag">Builder</span>
+      </div>
+    </div>
+    <div class="header-center">
+      <div class="search-wrap">
+        <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+        </svg>
+        <input type="text" id="searchInput" class="search-input" placeholder="Search members…"/>
+        <span class="member-count" id="memberCount">0 members</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <button class="icon-btn" id="themeToggle" title="Toggle theme">
+        <span id="themeIcon">☀️</span>
+      </button>
+      <div class="h-sep"></div>
+      <button class="btn btn-ghost" id="exportBtn">⬇ Export</button>
+      <label class="btn btn-ghost" style="cursor:pointer">
+        ⬆ Import<input type="file" id="importFile" accept=".json" style="display:none"/>
+      </label>
+      <button class="btn btn-primary" id="addMemberBtn">＋ Add Member</button>
+    </div>
+  </header>
+
+  <div class="tab-bar">
+    <button class="tab active" id="tabTree" onclick="switchView('tree')">🌳 Tree View</button>
+    <button class="tab" id="tabText" onclick="switchView('text')">📄 Text View</button>
+    <button class="tab" id="tabCards" onclick="switchView('cards')">🃏 Cards</button>
+  </div>
+
+  <main class="main">
+    <div class="view-area">
+
+      <div id="treeView" class="tree-scroll">
+        <div id="treeCanvas" class="tree-canvas"></div>
+      </div>
+
+      <div id="textView" class="text-view" style="display:none">
+        <pre id="textOutput" class="text-output"></pre>
+      </div>
+
+      <div id="cardsView" class="cards-grid-wrap" style="display:none">
+        <div id="cardsGrid" class="cards-grid"></div>
+      </div>
+
+    </div>
+
+    <aside class="panel" id="rightPanel">
+      <div class="panel-placeholder" id="panelPlaceholder">
+        <div class="placeholder-icon">👨‍👩‍👧‍👦</div>
+        <p>Select a member to view details,<br/>or add a new one to get started.</p>
+      </div>
+    </aside>
+  </main>
+
+  <div id="toast" class="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>
