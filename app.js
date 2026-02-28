@@ -1,9 +1,3 @@
-// ═══════════════════════════════════════════════════
-//  FAMILY TREE BUILDER — app.js
-//  Tech: Vanilla JS | No dependencies
-// ═══════════════════════════════════════════════════
-
-// ── INITIAL DATA ────────────────────────────────────
 let members = [
   { id:"1", name:"Amit Sharma",  gender:"Male",   dob:"1955-03-10", fatherId:"",  motherId:"" },
   { id:"2", name:"Priya Sharma", gender:"Female", dob:"1958-07-22", fatherId:"",  motherId:"" },
@@ -13,13 +7,12 @@ let members = [
   { id:"6", name:"Riya Sharma",  gender:"Female", dob:"2008-02-03", fatherId:"3", motherId:"" },
 ];
 
-// ── STATE ────────────────────────────────────────────
+
 let selectedId  = null;
 let panelMode   = "placeholder"; // "placeholder" | "detail" | "add" | "edit"
 let editingId   = null;
 let currentView = "tree";        // "tree" | "text" | "cards"
 
-// ── HELPERS ──────────────────────────────────────────
 const byId    = id => members.find(m => m.id === id);
 const childOf = id => members.filter(m => m.fatherId === id || m.motherId === id);
 const siblOf  = p  => members.filter(m =>
@@ -43,7 +36,6 @@ function formatDate(dob) {
 const genderEmoji = g => ({ Male:"👨", Female:"👩", Other:"🧑" }[g] || "👤");
 const barCls      = g => ({ Male:"male", Female:"female", Other:"other" }[g] || "none");
 
-// ── THEME ────────────────────────────────────────────
 function toggleTheme() {
   const root  = document.documentElement;
   const isDark = root.getAttribute("data-theme") === "dark";
@@ -60,12 +52,8 @@ function initTheme() {
   }
 }
 
-// ══════════════════════════════════════════════════════
-//  TREE VIEW
-// ══════════════════════════════════════════════════════
 
 function buildRoots() {
-  // Roots = members whose parents are not in our dataset
   const allIds = new Set(members.map(m => m.id));
   return members.filter(m =>
     (!m.fatherId || !allIds.has(m.fatherId)) &&
@@ -73,7 +61,6 @@ function buildRoots() {
   );
 }
 
-// Group top-level members into family units (couples + singles)
 function groupTopLevel() {
   const roots = buildRoots();
   const used  = new Set();
@@ -81,7 +68,6 @@ function groupTopLevel() {
 
   roots.forEach(m => {
     if (used.has(m.id)) return;
-    // Find a partner: another root who shares a child with m
     const partner = roots.find(o =>
       o.id !== m.id && !used.has(o.id) &&
       members.some(c =>
@@ -101,7 +87,6 @@ function groupTopLevel() {
     }
   });
 
-  // Orphaned members not in any unit (e.g. Payal with no parent in dataset and no partner yet)
   roots.forEach(m => {
     if (!used.has(m.id)) {
       used.add(m.id);
@@ -121,7 +106,6 @@ function uniqueKids(parentIds) {
   });
 }
 
-// Build a child-unit for each child (they may themselves have a partner + kids)
 function childToUnit(child) {
   const grandkids = childOf(child.id);
   const partner   = members.find(o =>
@@ -139,7 +123,6 @@ function childToUnit(child) {
   return { type:"single", member: child, kids: grandkids };
 }
 
-// Build one tree-node card HTML
 function nodeHTML(member) {
   const active = selectedId === member.id ? " active" : "";
   const dob    = formatDate(member.dob);
@@ -154,7 +137,6 @@ function nodeHTML(member) {
     </div>`;
 }
 
-// Recursively render a unit
 function renderUnit(unit) {
   const kids = unit.kids || [];
 
@@ -179,7 +161,6 @@ function renderUnit(unit) {
     return `<div class="child-col"><div class="child-rise"></div>${renderUnit(cu)}</div>`;
   }).join("");
 
-  // Compute siblings-bar width dynamically via CSS flex
   return `
     <div class="family-unit">
       ${parentsHTML}
@@ -224,10 +205,6 @@ function renderTree() {
   newCanvas.innerHTML = `<div class="gen-row">${topUnits.map(u => renderUnit(u)).join("")}</div>`;
 }
 
-// ══════════════════════════════════════════════════════
-//  TEXT VIEW — ASCII-style hierarchy
-// ══════════════════════════════════════════════════════
-
 function renderText() {
   const out = document.getElementById("textOutput");
   if (!members.length) { out.textContent = "(No members yet)"; return; }
@@ -256,10 +233,6 @@ function renderText() {
 
   out.textContent = lines.join("\n");
 }
-
-// ══════════════════════════════════════════════════════
-//  CARDS VIEW
-// ══════════════════════════════════════════════════════
 
 function renderCards() {
   const grid  = document.getElementById("cardsGrid");
@@ -299,9 +272,6 @@ function renderCards() {
   }).join("");
 }
 
-// ══════════════════════════════════════════════════════
-//  RIGHT PANEL
-// ══════════════════════════════════════════════════════
 
 function openPanel() {
   document.getElementById("rightPanel").classList.add("open");
@@ -328,7 +298,6 @@ function renderRight() {
     return;
   }
 
-  // detail
   const p = byId(selectedId);
   if (!p) { closePanel(); return; }
 
@@ -382,7 +351,6 @@ function renderRight() {
     </div>`;
 }
 
-// ── FORM ────────────────────────────────────────────
 
 function renderForm(panel) {
   const editing = panelMode === "edit" ? byId(editingId) : null;
@@ -449,7 +417,6 @@ function renderForm(panel) {
     </div>`;
 }
 
-// ── CRUD ACTIONS ─────────────────────────────────────
 
 function selectMember(id) {
   selectedId = id;
@@ -490,7 +457,6 @@ function saveForm() {
   const motherId = document.getElementById("fMother").value;
   const errEl    = document.getElementById("formError");
 
-  // Collect checked children
   const checkedKids = Array.from(document.querySelectorAll(".kid-cb:checked")).map(cb => cb.value);
 
   if (!name) { errEl.textContent = "⚠ Name is required."; errEl.style.display = "block"; return; }
@@ -511,18 +477,15 @@ function saveForm() {
     toast("Member added ✓");
   }
 
-  // Apply children relationships
   members = members.map(m => {
     if (m.id === savedId) return m;
     if (!checkedKids.includes(m.id)) {
-      // Remove old link to savedId if unchecked
       return {
         ...m,
         fatherId: m.fatherId === savedId ? "" : m.fatherId,
         motherId: m.motherId === savedId ? "" : m.motherId,
       };
     }
-    // Link: assign as father or mother based on gender
     if (gender === "Female") return { ...m, motherId: savedId };
     return { ...m, fatherId: savedId };
   });
@@ -547,7 +510,6 @@ function deleteMember(id) {
   renderAll();
 }
 
-// ── EXPORT / IMPORT ──────────────────────────────────
 
 function exportData() {
   const blob = new Blob([JSON.stringify(members, null, 2)], { type: "application/json" });
@@ -578,7 +540,6 @@ function importData(e) {
   e.target.value = "";
 }
 
-// ── TOAST ────────────────────────────────────────────
 
 let _toastTimer;
 function toast(msg) {
@@ -589,7 +550,6 @@ function toast(msg) {
   _toastTimer = setTimeout(() => el.classList.remove("show"), 2500);
 }
 
-// ── VIEW SWITCHER ────────────────────────────────────
 
 function switchView(view) {
   currentView = view;
@@ -597,12 +557,10 @@ function switchView(view) {
     document.getElementById(`${v}View`).style.display  = v === view ? "block" : "none";
     document.getElementById(`tab${v.charAt(0).toUpperCase() + v.slice(1)}`).classList.toggle("active", v === view);
   });
-  // treeView needs flex, not block
   if (view === "tree") document.getElementById("treeView").style.display = "block";
   renderAll();
 }
 
-// ── RENDER ALL ───────────────────────────────────────
 
 function renderAll() {
   if (currentView === "tree")  renderTree();
@@ -611,13 +569,11 @@ function renderAll() {
   renderRight();
 }
 
-// ── EMPTY STATE ──────────────────────────────────────
 
 function emptyStateHTML(icon, msg) {
   return `<div class="empty-state"><div class="empty-icon">${icon}</div><p>${msg}</p></div>`;
 }
 
-// ── INIT ─────────────────────────────────────────────
 
 document.addEventListener("DOMContentLoaded", () => {
   initTheme();
